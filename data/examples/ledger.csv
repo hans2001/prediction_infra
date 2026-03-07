@@ -1,0 +1,4 @@
+side,entry_price,exit_price,qty,fees
+long,0.42,0.57,10,0.08
+short,0.71,0.61,8,0.06
+long,0.35,0.20,5,0.04

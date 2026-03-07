@@ -1,0 +1,1 @@
+run_id,strategy_name,hypothesis,data_window,train_window,test_window,fees_model,slippage_model,net_pnl,max_drawdown,brier_score,log_loss,decision,notes
