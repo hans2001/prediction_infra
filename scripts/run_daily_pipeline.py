@@ -3,14 +3,18 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import subprocess
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
 
-def run(cmd: list[str], cwd: Path) -> None:
+def run(cmd: list[str], cwd: Path) -> float:
     print(f"+ {' '.join(cmd)}")
+    start = time.perf_counter()
     subprocess.run(cmd, cwd=cwd, check=True)
+    return time.perf_counter() - start
 
 
 def has_returns_rows(path: Path) -> bool:
@@ -42,8 +46,9 @@ def main() -> int:
     reports = root / "data" / "reports"
     reports.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    timings: dict[str, float] = {}
 
-    run(
+    timings["fetch"] = run(
         [
             "python3",
             "scripts/fetch_market_snapshot.py",
@@ -54,8 +59,8 @@ def main() -> int:
         ],
         cwd=root,
     )
-    run(["python3", "scripts/normalize_snapshots.py"], cwd=root)
-    run(
+    timings["normalize"] = run(["python3", "scripts/normalize_snapshots.py"], cwd=root)
+    timings["integrity"] = run(
         [
             "python3",
             "scripts/build_integrity_report.py",
@@ -75,11 +80,11 @@ def main() -> int:
             db_cmd += ["--db-url", args.db_url]
         if args.db_init_schema:
             db_cmd.append("--init-schema")
-        run(db_cmd, cwd=root)
+        timings["db_ingest_snapshots"] = run(db_cmd, cwd=root)
 
     history_path = root / args.returns_history
     if has_returns_rows(history_path):
-        run(
+        timings["probability_report"] = run(
             [
                 "python3",
                 "scripts/probability_report.py",
@@ -96,7 +101,7 @@ def main() -> int:
             ],
             cwd=root,
         )
-        run(
+        timings["validate_strategy"] = run(
             [
                 "python3",
                 "scripts/validate_strategy.py",
@@ -126,10 +131,20 @@ def main() -> int:
                 returns_cmd += ["--db-url", args.db_url]
             if args.db_init_schema:
                 returns_cmd.append("--init-schema")
-            run(returns_cmd, cwd=root)
+            timings["db_sync_returns"] = run(returns_cmd, cwd=root)
     else:
         print(f"skip strategy validation (returns history empty or missing): {history_path}")
 
+    metrics = {
+        "timestamp_utc": datetime.now(UTC).isoformat(),
+        "timings_sec": timings,
+        "total_sec": sum(timings.values()),
+    }
+    metrics_path = reports / "pipeline_metrics.jsonl"
+    with metrics_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(metrics, ensure_ascii=True))
+        f.write("\n")
+    print(f"wrote {metrics_path}")
     print("daily_pipeline=ok")
     return 0
 

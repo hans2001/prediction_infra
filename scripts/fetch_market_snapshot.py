@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -22,6 +24,20 @@ def write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=True, indent=2), encoding="utf-8")
 
 
+def _fetch_and_write(source: str, limit: int, out_dir: Path, stamp: str) -> tuple[str, float]:
+    start = time.perf_counter()
+    if source == "kalshi":
+        payload = kalshi_public.fetch_markets(limit=limit)
+        write_json(out_dir / f"kalshi_markets_{stamp}.json", payload)
+    elif source == "polymarket":
+        payload = polymarket_public.fetch_markets(limit=limit)
+        write_json(out_dir / f"polymarket_markets_{stamp}.json", payload)
+    else:
+        raise ValueError(f"unsupported source: {source}")
+    elapsed = time.perf_counter() - start
+    return source, elapsed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Fetch public market snapshots.")
     parser.add_argument("--source", choices=["kalshi", "polymarket", "all"], default="all")
@@ -32,15 +48,17 @@ def main() -> int:
     out_dir = Path(args.out_dir)
     stamp = _timestamp()
 
-    if args.source in {"kalshi", "all"}:
-        kalshi = kalshi_public.fetch_markets(limit=args.limit)
-        write_json(out_dir / f"kalshi_markets_{stamp}.json", kalshi)
-        print(f"wrote kalshi snapshot at {stamp}")
+    sources: list[str]
+    if args.source == "all":
+        sources = ["kalshi", "polymarket"]
+    else:
+        sources = [args.source]
 
-    if args.source in {"polymarket", "all"}:
-        polymarket = polymarket_public.fetch_markets(limit=args.limit)
-        write_json(out_dir / f"polymarket_markets_{stamp}.json", polymarket)
-        print(f"wrote polymarket snapshot at {stamp}")
+    with ThreadPoolExecutor(max_workers=len(sources)) as ex:
+        futures = [ex.submit(_fetch_and_write, source, args.limit, out_dir, stamp) for source in sources]
+        for fut in futures:
+            source, elapsed = fut.result()
+            print(f"wrote {source} snapshot at {stamp} elapsed_sec={elapsed:.3f}")
 
     return 0
 

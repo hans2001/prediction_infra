@@ -11,6 +11,7 @@ It executes:
 4. probability report (if returns history exists)
 5. go/no-go validation report (if returns history exists)
 6. optional PostgreSQL sync (if `--db-write` is enabled)
+7. appends pipeline timing metrics to `data/reports/pipeline_metrics.jsonl`
 
 ## Returns History Pipeline
 Canonical history file:
