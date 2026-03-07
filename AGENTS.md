@@ -12,6 +12,7 @@ Everything else is secondary.
 3. Execution correctness over feature count.
 4. Risk control over aggressive sizing.
 5. Ship small, test fast, iterate weekly.
+6. Scientific falsification over narrative confirmation.
 
 ## Priority Filter (Mandatory)
 Every task must map to at least one:
@@ -36,6 +37,17 @@ Current stage priority order:
 4. Log fills, PnL, and risk events with timestamps.
 5. For strategy changes, include before/after metrics.
 6. Do not add agent/chatbot features unless profitability gates are met.
+7. Do not claim "working strategy" without out-of-sample evidence.
+8. For every strategy claim, include assumptions that could invalidate it.
+
+## Scientific Policy (Mandatory)
+1. Every strategy starts with a falsifiable hypothesis.
+2. Metrics and pass/fail gates are declared before running experiments.
+3. Train/validation/test split must be time-ordered to prevent leakage.
+4. Strategy ranking must use net performance after fees/slippage.
+5. Multiple-testing risk must be addressed (avoid data snooping).
+6. Preserve experiment logs and exact code/data version references.
+7. Treat "mathematically right answer" as a search process, not a guaranteed result.
 
 ## Suggested Repo Layout
 ```text

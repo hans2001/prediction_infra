@@ -1,6 +1,9 @@
 # Attack Plan
 
 This plan is designed to remove guessing. Every stage has explicit pass/fail gates.
+The required scientific behavior and test coverage are defined in:
+- `docs/scientific-policy.md`
+- `docs/validation-matrix.md`
 
 ## Stage 0: Ground Truth and Access Setup
 Goal: avoid building on wrong assumptions.

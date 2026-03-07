@@ -11,6 +11,22 @@ Build a lean prediction-market trading system focused on one outcome: positive n
 
 If a task does not improve ROI, execution quality, or risk control, it is low priority.
 
+## Scientific Method Mandate
+This repo must follow a scientific workflow:
+1. state a falsifiable hypothesis
+2. define metrics before running experiments
+3. separate train/validation/test by time
+4. report out-of-sample results only for strategy decisions
+5. record every run and keep reproducible artifacts
+
+Working assumption:
+- there may exist a mathematically exploitable edge in some market regimes.
+- the system should converge toward that edge through measurement and falsification.
+
+Important:
+- no method guarantees profit.
+- any strategy can fail under regime change, hidden costs, or execution drift.
+
 ## Success Metrics (Go/No-Go Gates)
 - Positive paper-trading net PnL over 30+ days
 - Positive live net PnL with small capital over 2+ weeks
@@ -45,6 +61,8 @@ For strategy work, "strong dev infra" means:
 - `docs/repo-target.md`: target architecture, phased plan, strategy scoring
 - `docs/sources.md`: official docs + papers for model/evaluation tuning
 - `docs/attack-plan.md`: step-by-step build and objective pass/fail gates
+- `docs/scientific-policy.md`: mandatory scientific philosophy for all contributors/agents
+- `docs/validation-matrix.md`: required tests by stage (Stage 1/2/3)
 
 ## Current Scaffold
 - `src/pred_infra/collector`: market data fetchers
@@ -55,6 +73,18 @@ For strategy work, "strong dev infra" means:
 - `scripts/normalize_snapshots.py`: raw -> normalized JSONL
 - `scripts/build_integrity_report.py`: normalized data quality report
 - `scripts/eval_model.py`: probability model evaluation CLI
+- `scripts/probability_report.py`: P_profit / P_ruin / PBO report
+
+## What Is Already Implemented For Legitimacy
+Stage 1 (data correctness):
+- schema normalization to common fields
+- integrity report with missing/duplicate/price-bounds/staleness/parse checks
+
+Stage 2 (evaluation correctness):
+- Brier score and log loss implementation
+- trade-ledger gross/net PnL summary with fees
+- max drawdown metric
+- deterministic test fixtures for metric and normalization logic
 
 ## Quick Start
 ```bash
@@ -73,6 +103,12 @@ python3 scripts/build_integrity_report.py --max-age-hours 24
 python3 scripts/eval_model.py \
   --predictions data/examples/predictions.csv \
   --ledger data/examples/ledger.csv
+
+# 5) Build probability report from strategy return history
+python3 scripts/probability_report.py \
+  --returns data/examples/returns.csv \
+  --focus-strategy mm_v1 \
+  --out data/reports/probability_report_example.json
 ```
 
 ## Collaboration
