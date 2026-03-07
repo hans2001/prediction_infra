@@ -39,6 +39,7 @@ Current stage priority order:
 6. Do not add agent/chatbot features unless profitability gates are met.
 7. Do not claim "working strategy" without out-of-sample evidence.
 8. For every strategy claim, include assumptions that could invalidate it.
+9. Run `scripts/validate_strategy.py` and attach the report before any go-live recommendation.
 
 ## Scientific Policy (Mandatory)
 1. Every strategy starts with a falsifiable hypothesis.
@@ -96,3 +97,4 @@ docs/
 3. Logs/metrics added
 4. Paper-trading or backtest evidence attached
 5. Net result reported after fees/slippage assumptions
+6. Regression validation report attached for metric/strategy/data logic changes

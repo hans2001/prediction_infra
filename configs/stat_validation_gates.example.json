@@ -1,0 +1,11 @@
+{
+  "min_observations": 300,
+  "min_mean_return": 0.0001,
+  "min_sharpe": 0.05,
+  "min_p_profit": 0.55,
+  "max_p_ruin": 0.25,
+  "max_pbo": 0.45,
+  "min_conservative_score": 0.20,
+  "max_drawdown": 0.20,
+  "period_stop_loss": 0.05
+}

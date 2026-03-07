@@ -63,6 +63,7 @@ For strategy work, "strong dev infra" means:
 - `docs/attack-plan.md`: step-by-step build and objective pass/fail gates
 - `docs/scientific-policy.md`: mandatory scientific philosophy for all contributors/agents
 - `docs/validation-matrix.md`: required tests by stage (Stage 1/2/3)
+- `docs/rigorous-validation-pipeline.md`: go/no-go statistical validation pipeline
 
 ## Current Scaffold
 - `src/pred_infra/collector`: market data fetchers
@@ -74,6 +75,7 @@ For strategy work, "strong dev infra" means:
 - `scripts/build_integrity_report.py`: normalized data quality report
 - `scripts/eval_model.py`: probability model evaluation CLI
 - `scripts/probability_report.py`: P_profit / P_ruin / PBO report
+- `scripts/validate_strategy.py`: threshold-based go/no-go validator
 
 ## What Is Already Implemented For Legitimacy
 Stage 1 (data correctness):
@@ -109,6 +111,13 @@ python3 scripts/probability_report.py \
   --returns data/examples/returns.csv \
   --focus-strategy mm_v1 \
   --out data/reports/probability_report_example.json
+
+# 6) Run rigorous go/no-go validation gates
+python3 scripts/validate_strategy.py \
+  --returns data/examples/returns.csv \
+  --gates configs/stat_validation_gates.example.json \
+  --focus-strategy mm_v1 \
+  --out data/reports/validation_report_example.json
 ```
 
 ## Collaboration
