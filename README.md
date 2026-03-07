@@ -64,6 +64,7 @@ For strategy work, "strong dev infra" means:
 - `docs/scientific-policy.md`: mandatory scientific philosophy for all contributors/agents
 - `docs/validation-matrix.md`: required tests by stage (Stage 1/2/3)
 - `docs/rigorous-validation-pipeline.md`: go/no-go statistical validation pipeline
+- `docs/operations.md`: automation, cron, and returns-history operations
 
 ## Current Scaffold
 - `src/pred_infra/collector`: market data fetchers
@@ -76,6 +77,8 @@ For strategy work, "strong dev infra" means:
 - `scripts/eval_model.py`: probability model evaluation CLI
 - `scripts/probability_report.py`: P_profit / P_ruin / PBO report
 - `scripts/validate_strategy.py`: threshold-based go/no-go validator
+- `scripts/upsert_returns_history.py`: append/dedupe returns history
+- `scripts/run_daily_pipeline.py`: one-command daily pipeline runner
 
 ## What Is Already Implemented For Legitimacy
 Stage 1 (data correctness):
@@ -118,6 +121,15 @@ python3 scripts/validate_strategy.py \
   --gates configs/stat_validation_gates.example.json \
   --focus-strategy mm_v1 \
   --out data/reports/validation_report_example.json
+
+# 7) Upsert new paper/backtest returns into long-run history
+python3 scripts/upsert_returns_history.py \
+  --input-csv data/examples/returns.csv \
+  --history data/returns/returns_history.csv \
+  --default-source paper
+
+# 8) Run daily pipeline end-to-end
+python3 scripts/run_daily_pipeline.py --focus-strategy mm_v1
 ```
 
 ## Collaboration

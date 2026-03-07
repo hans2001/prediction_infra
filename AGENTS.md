@@ -40,6 +40,7 @@ Current stage priority order:
 7. Do not claim "working strategy" without out-of-sample evidence.
 8. For every strategy claim, include assumptions that could invalidate it.
 9. Run `scripts/validate_strategy.py` and attach the report before any go-live recommendation.
+10. After each backtest/paper run, upsert returns into `data/returns/returns_history.csv`.
 
 ## Scientific Policy (Mandatory)
 1. Every strategy starts with a falsifiable hypothesis.

@@ -1,0 +1,5 @@
+SHELL=/bin/zsh
+PATH=/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin
+
+# Every 15 minutes: run data pipeline and refresh probability/validation reports.
+*/15 * * * * cd /Users/hans/repo/pred-infra && /usr/bin/env python3 scripts/run_daily_pipeline.py >> /Users/hans/repo/pred-infra/data/reports/cron_pipeline.log 2>&1
