@@ -7,7 +7,9 @@ name = "pred-infra"
 version = "0.1.0"
 description = "Profit-first prediction market infrastructure"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+  "psycopg[binary]>=3.1.0"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

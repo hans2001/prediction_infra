@@ -65,6 +65,7 @@ For strategy work, "strong dev infra" means:
 - `docs/validation-matrix.md`: required tests by stage (Stage 1/2/3)
 - `docs/rigorous-validation-pipeline.md`: go/no-go statistical validation pipeline
 - `docs/operations.md`: automation, cron, and returns-history operations
+- `docs/database.md`: PostgreSQL/RDS schema and sync flow
 
 ## Current Scaffold
 - `src/pred_infra/collector`: market data fetchers
@@ -79,6 +80,9 @@ For strategy work, "strong dev infra" means:
 - `scripts/validate_strategy.py`: threshold-based go/no-go validator
 - `scripts/upsert_returns_history.py`: append/dedupe returns history
 - `scripts/run_daily_pipeline.py`: one-command daily pipeline runner
+- `scripts/init_postgres.py`: initialize postgres schema
+- `scripts/ingest_normalized_to_db.py`: sync normalized snapshots to postgres
+- `scripts/sync_returns_to_db.py`: sync returns history to postgres
 
 ## What Is Already Implemented For Legitimacy
 Stage 1 (data correctness):
@@ -130,6 +134,10 @@ python3 scripts/upsert_returns_history.py \
 
 # 8) Run daily pipeline end-to-end
 python3 scripts/run_daily_pipeline.py --focus-strategy mm_v1
+
+# 9) Optional DB mode (RDS/PostgreSQL)
+python3 scripts/init_postgres.py --db-url "$DATABASE_URL"
+python3 scripts/run_daily_pipeline.py --focus-strategy mm_v1 --db-write --db-url "$DATABASE_URL"
 ```
 
 ## Collaboration

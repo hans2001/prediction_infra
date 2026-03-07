@@ -10,6 +10,7 @@ It executes:
 3. integrity report
 4. probability report (if returns history exists)
 5. go/no-go validation report (if returns history exists)
+6. optional PostgreSQL sync (if `--db-write` is enabled)
 
 ## Returns History Pipeline
 Canonical history file:
@@ -56,3 +57,13 @@ After any change to:
 - strategy logic
 
 you must rerun the daily pipeline and keep generated reports as evidence.
+
+## Lightsail Deployment
+Deployment helper:
+- `ops/lightsail/install_lightsail.sh`
+
+What it sets up:
+1. Python venv and package install
+2. `.env` from DB template
+3. `systemd` service + timer (every 15 minutes)
+4. `logrotate` for pipeline logs

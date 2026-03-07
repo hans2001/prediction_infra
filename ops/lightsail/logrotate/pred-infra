@@ -1,0 +1,8 @@
+/opt/pred-infra/data/reports/*.log {
+  daily
+  rotate 14
+  compress
+  missingok
+  notifempty
+  copytruncate
+}

@@ -33,6 +33,9 @@ def main() -> int:
     parser.add_argument("--focus-strategy", default="mm_v1")
     parser.add_argument("--n-trials", type=int, default=5000)
     parser.add_argument("--pbo-splits", type=int, default=200)
+    parser.add_argument("--db-write", action="store_true", help="sync normalized/returns data to PostgreSQL")
+    parser.add_argument("--db-url", default="", help="optional DATABASE_URL override")
+    parser.add_argument("--db-init-schema", action="store_true", help="apply schema before ingest")
     args = parser.parse_args()
 
     root = Path(args.repo_root).resolve()
@@ -61,6 +64,18 @@ def main() -> int:
         ],
         cwd=root,
     )
+    if args.db_write:
+        db_cmd = [
+            "python3",
+            "scripts/ingest_normalized_to_db.py",
+            "--normalized-dir",
+            "data/normalized",
+        ]
+        if args.db_url:
+            db_cmd += ["--db-url", args.db_url]
+        if args.db_init_schema:
+            db_cmd.append("--init-schema")
+        run(db_cmd, cwd=root)
 
     history_path = root / args.returns_history
     if has_returns_rows(history_path):
@@ -100,6 +115,18 @@ def main() -> int:
             ],
             cwd=root,
         )
+        if args.db_write:
+            returns_cmd = [
+                "python3",
+                "scripts/sync_returns_to_db.py",
+                "--returns-csv",
+                str(history_path),
+            ]
+            if args.db_url:
+                returns_cmd += ["--db-url", args.db_url]
+            if args.db_init_schema:
+                returns_cmd.append("--init-schema")
+            run(returns_cmd, cwd=root)
     else:
         print(f"skip strategy validation (returns history empty or missing): {history_path}")
 

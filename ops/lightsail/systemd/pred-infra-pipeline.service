@@ -1,0 +1,16 @@
+[Unit]
+Description=pred-infra scheduled pipeline runner
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/pred-infra
+EnvironmentFile=/opt/pred-infra/.env
+ExecStart=/usr/bin/env python3 scripts/run_daily_pipeline.py --focus-strategy mm_v1 --db-write
+User=ubuntu
+Group=ubuntu
+Nice=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Run pred-infra pipeline every 15 minutes
+
+[Timer]
+OnCalendar=*:0/15
+Persistent=true
+Unit=pred-infra-pipeline.service
+
+[Install]
+WantedBy=timers.target
